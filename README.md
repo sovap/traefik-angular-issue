@@ -1,5 +1,5 @@
 # Intro
-Repository contains code that represent issue with accessing angular app (Petclinic) deployed to docker container where traffic is handled by Traefic (reverse proxy).
+Repository contains code that represent issue with accessing angular app (Petclinic) deployed to docker container where traffic is handled by Traefik (reverse proxy).
 To deploy the containers to the localhost just run the command in the project root: docker-compose up
 
 There are three containers:
@@ -16,4 +16,4 @@ There are three containers:
 `issue\petclinic-ui\nginx\angular.conf` where the file is added to the container during the build in the file:
 `issue\petclinic-ui\Dockerfile` line 21. Also the angular property APP_BASE_HREF is configured in `issue\petclinic-ui\src\app\app.module.ts` on line 62. Solution is working fine on the exposed port: 82 without the redirect (you can test it like this: `localhost:82/practice/petclinic/`). Unfortunately if I try the redirect to port 80 the angular app with start but it will not load the script files (404 response). You can test it by providing the url in the browser: `localhost/practice/petclinic/`
 
-2. Another idea is to remove the angular nginx config and run the petclinic app inside the container without the url prefix (so just on `localhost:82/`) and configure Traefic to listen on the url prefix but remove it when redirecting to the target container. Unfortunately I was not able to configure it successfully.
+2. Another idea is to remove the angular nginx config and run the petclinic app inside the container without the url prefix (so just on `localhost:82/`) and configure Traefik to listen on the url prefix but remove it when redirecting to the target container. Unfortunately I was not able to configure it successfully.

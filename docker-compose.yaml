@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+
+  traefik:
+    image: traefik:v2.11
+    command:
+      - "--providers.docker"
+      - "--api.insecure=true"
+      - "--log.level=TRACE"
+      - "--log.filePath=/logs/traefik.log" 
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile
+    depends_on:
+      - petclinic-ui
+    volumes:
+      - ./web/html/:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`localhost`)"
+    ports:
+      - 81:80
+
+  petclinic-ui:
+    build: 
+      context: ./petclinic-ui
+    depends_on:
+      - petclinic-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.petclinic-ui.rule=(Host(`localhost`) && PathPrefix(`/practice/petclinic/`))"
+      # - "traefik.http.routers.angular-router.service=angular"
+      # - "traefik.http.middlewares.angular-strip.stripprefix.prefixes=/practice/petclinic
+      # - "traefik.http.middlewares.angular-strip.stripprefix.forceslash=false"
+      # - "traefik.http.routers.angular-router.middlewares=angular-strip"
+    ports:
+      - 82:80
+
+  petclinic-api:
+    build:
+      context: ./petclinic-api
+    ports:
+      - 9966:9966
